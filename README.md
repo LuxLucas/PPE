@@ -1,6 +1,7 @@
 # Programação Para Engenharia 
 
-### __Professor:__ _Giovani Martins Cascaes_
+__Autor:__ _Lucas Pizoni Flôres_  
+__Professor:__ _Giovani Martins Cascaes_
 
 [![Logo Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white 'Python')](# 'Python')
 
