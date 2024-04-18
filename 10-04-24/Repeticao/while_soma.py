@@ -32,6 +32,7 @@ def is_not_none(numero):
 
 def somar_numero(soma, numero, quantidade_de_numero):
     if is_not_none(numero):
+        quantidade_de_numero += 1
         if is_not_none(soma):
             soma = soma + numero
             return soma, quantidade_de_numero
@@ -81,13 +82,12 @@ while numero != -1:
     repeticao += 1
     print(repeticao)
     numero = receber_numero()
-    if repeticao == 1:
-        if numero != -1:
-            soma, numeros_somados = somar_numero(soma, numero, numeros_somados)
-            maior_numero = numero
-            menor_numero = numero
-            media = numero
-    else:
+    if repeticao == 1 and numero != -1:
+        soma, numeros_somados = somar_numero(soma, numero, numeros_somados)
+        maior_numero = numero
+        menor_numero = numero
+        media = numero
+    elif numero != -1:
         maior_numero = comparar_maior_numero(maior_numero, numero)
         menor_numero = comparar_menor_numero(menor_numero, numero)
         soma, numeros_somados = somar_numero(soma, numero, numeros_somados)
