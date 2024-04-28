@@ -9,12 +9,13 @@ def obter_nota():
             return nota
         print('\033[FNota: Inválida')
         return None
+    
     except (ValueError, TypeError):
         print('\033[FNota: Inválida')
         return None
 
 
-def registrar_notas_alunos():
+def registrar_notas_de_aluno():
     lista_notas = list()
     while len(lista_notas) < 4:
         nota = obter_nota()
@@ -40,7 +41,7 @@ def main():
     total_medias = []
     for repeticao in range(1, total_repeticoes+1):
         print(f'\n{f" ALUNO {repeticao} ":=^60}')
-        notas = registrar_notas_alunos()
+        notas = registrar_notas_de_aluno()
         media = calcular_media(notas)
         total_medias.append(media)
     print(f'\nTotal de alunos APROVADOS: {quantidade_alunos_aprovados(total_medias)}')
