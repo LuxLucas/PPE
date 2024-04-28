@@ -16,6 +16,6 @@ Programação Para Engenharia é uma matéria da universidade Satc que visa ensi
 - Estruturas de controle sequencial, condicional e repetição
 - Funções e sub-rotinas.
 
-__Professor:__ _Giovani Martins Cascaes:_
+__Professor Atual:__ _Giovani Martins Cascaes:_
   
 [<img src="https://www1.satc.edu.br/portais/arquivos/usuarios/293/FotoGiovani.jpg" height="280rem">](# 'Giovani Martins Cascaes')
