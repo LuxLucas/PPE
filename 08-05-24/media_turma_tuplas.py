@@ -2,6 +2,7 @@ def calcular_media(notas):
     media = sum(notas)/len(notas)
     return media
 
+
 # Declaração de variáveis
 notas_primeira_prova = (7, 8.3, 10, 6.5, 9.3)
 notas_segunda_prova = (8.5, 6.9, 5, 7.5, 9.8)
