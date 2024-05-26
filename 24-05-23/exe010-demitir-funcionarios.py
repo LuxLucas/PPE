@@ -7,7 +7,7 @@ def obter_nome():
     return nome
 
 
-def obter_nome_valido(nome):
+def obter_nome_valido():
     while True:
         nome = obter_nome()
         if validar_string(nome):
@@ -20,7 +20,7 @@ def obter_funcao():
     return funcao
 
 
-def obter_funcao_valido(funcao):
+def obter_funcao_valido():
     while True:
         funcao = obter_funcao()
         if validar_string(funcao):
@@ -41,7 +41,7 @@ def validar_tempo_servico(tempo_servico):
     return not tempo_servico is None
 
 
-def obter_tempo_servico_valido(tempo_servico):
+def obter_tempo_servico_valido():
     while True:
         tempo_servico = obter_tempo_servico()
         if validar_tempo_servico(tempo_servico):
@@ -59,9 +59,10 @@ def cadastrar_funcionario():
 
 def cadastrar_grupo_funcionarios():
     grupo = {}
-    for index in range(2):
+    for index in range(6):
+        print(f'\n{" CADASTRANDO FUNCIONÁRIO ":=^50}')
         funcionario = cadastrar_funcionario()
-        grupo[index] = funcionario
+        grupo[index] = grupo.get(index, funcionario)
     return grupo
 
 
@@ -79,25 +80,37 @@ def obter_indice_funcionario_para_demissao():
 
 
 def obter_indice_de_funcionario_para_demissao_valido(grupo_funcionarios):
+    indices = grupo_funcionarios.keys()
+    print(f'\n{" DEMITIR FUNCIONÁRIO ":=^50}')
+    print(f'Índices Válidos: {indices}')
+    
     while True:
         indice_funcionario = obter_indice_funcionario_para_demissao()
         if validar_escolha_funcionario_para_demissao(indice_funcionario, grupo_funcionarios):
             break
+    
     return indice_funcionario
+
 
 
 def impedir_demissao(funcionario):
     return (funcionario['função'] == 'PROGRAMADOR') and (funcionario['tempo_serviço'] >= 3) 
 
 
-def demitir_funcionario(indice, grupo):
+def demitir_funcionario_se_valido(indice, grupo):
     if impedir_demissao(grupo[indice]):
-        raise funcionario_invalido('Usuário não pode ser deletado') # type: ignore
+        print('ERRO: USUÁRIO NÃO PODE SER DELETADO')
     else:
         del grupo[indice]
-        print('Usuário demitido')
+        print('Usuário Demitido')
 
+def mostrar_indice_grupo_funcionario(grupo):
+    indices = []
+    for index_funcionario in grupo.keys():
+        indices.append(index_funcionario)
+    return indices
 
 grupo_funcionario = cadastrar_grupo_funcionarios()
 funcionario_escolhido = obter_indice_de_funcionario_para_demissao_valido(grupo_funcionario)
-demitir_funcionario(funcionario_escolhido)
+demitir_funcionario_se_valido(funcionario_escolhido, grupo_funcionario)
+print(f'Funcionários restantes: {mostrar_indice_grupo_funcionario(grupo_funcionario)}')
