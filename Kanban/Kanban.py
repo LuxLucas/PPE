@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import simpledialog
 from tkinter import messagebox
-from ttkthemes import ThemedTk
 
 
 def centralizar_janela(root_tk):
@@ -17,17 +16,29 @@ def centralizar_janela(root_tk):
 
 def adicionar_tarefa(parent, listbox: Listbox):
     tarefa = simpledialog.askstring(title='Adicionar Tarefa', prompt='Tarefa para adicionar', parent=parent)
-    if tarefa: listbox.insert(END, tarefa)
-    else: messagebox.showerror('ERRO', 'Tarefa não foi definida')
-    
-def adicionar_cor_na_linha(index:int, listbox:Listbox):
+    if tarefa:
+        listbox.insert(END, tarefa)
+    else:
+        messagebox.showerror('ERRO', 'Tarefa não foi definida')
+
+
+def adicionar_cor_na_linha(index: int, listbox: Listbox):
     cor = '#FCDBDB'
-    if listbox == listbox_central: cor = '#DFEBFD'
-    if listbox == listbox_direito: cor = '#D6F9D5'
-    if index % 2 == 0: listbox.itemconfig(index, bg=cor)
-    
-    
-def adicionar_tarefa_e_cor_na_listbox(parent, listbox:Listbox):
+    if listbox == listbox_central:
+        cor = '#DFEBFD'
+    if listbox == listbox_direito:
+        cor = '#D6F9D5'
+    listbox.itemconfig(index, bg=cor if index % 2 == 0 else 'white')
+
+
+def reconfigurar_todas_as_cores_nas_linhas(lb: Listbox):
+    linhas = lb.size()
+    if linhas:
+        for linha_index in range(linhas):
+            adicionar_cor_na_linha(linha_index, lb)
+
+
+def adicionar_tarefa_e_cor_na_listbox(parent, listbox: Listbox):
     adicionar_tarefa(parent, listbox)
     index = listbox.size() - 1
     adicionar_cor_na_linha(index, listbox)
@@ -37,7 +48,54 @@ def mostrar_pop_up_esquerdo(evento):
     pop_up_esquerdo.post(evento.x_root, evento.y_root)
 
 
-root = ThemedTk(theme='arc')
+def mostrar_pop_up_central(evento):
+    pop_up_central.post(evento.x_root, evento.y_root)
+
+
+def mostrar_pop_up_direito(evento):
+    pop_up_direito.post(evento.x_root, evento.y_root)
+
+
+def excluir_linhas_selecionada(lb: Listbox):
+    usuario_deseja_excluir = messagebox.askyesno('Aviso', 'Deseja realmente excluir?')
+    if usuario_deseja_excluir:
+        linhas_selecionadas = lb.curselection()
+        if linhas_selecionadas:
+            for linha_index in linhas_selecionadas[::-1]:
+                lb.delete(linha_index)
+            reconfigurar_todas_as_cores_nas_linhas(lb)
+        else:
+            messagebox.showerror('Erro', 'Linha não foi selecionda').title()
+
+
+def editar_linhas_selecionadas(lb: Listbox, pai):
+    linhas_selecionadas = lb.curselection()
+    if linhas_selecionadas:
+        for linha_index in linhas_selecionadas:
+            tarefa_antiga = lb.get(linha_index)
+            novo_titulo = simpledialog.askstring('Editar Tarefa', 'Edite sua tarefa', parent=pai, initialvalue=tarefa_antiga)
+            if novo_titulo:
+                lb.delete(linha_index)
+                lb.insert(linha_index, novo_titulo)
+    else:
+        messagebox.showerror('Erro', 'Linha não foi selecionda').title()
+
+
+def mudar_estado_da_tarefa(estado_atual: Listbox, novo_estado: Listbox):
+    linhas_selecionadas = estado_atual.curselection()
+    if linhas_selecionadas:
+        for linha_index in linhas_selecionadas:
+            tarefa = estado_atual.get(linha_index)
+            novo_estado.insert(END, tarefa)
+        for linha_index in linhas_selecionadas[::-1]:
+            estado_atual.delete(linha_index)
+        reconfigurar_todas_as_cores_nas_linhas(estado_atual)
+        reconfigurar_todas_as_cores_nas_linhas(novo_estado)
+    else:
+        messagebox.showerror('Erro', 'Linha não foi selecionda').title()
+
+
+root = Tk()
 root.title('Kanban')
 root.geometry('780x500')
 root.resizable(False, False)
@@ -66,52 +124,87 @@ frame_direito.place(relx=terceira_parte_da_janela*2, rely=0, relwidth=terceira_p
 
 # Criando e configrando Labels
 label_titulo_esquerdo = Label(frame_esquerdo, text='Para Fazer', bg='#FCDBDB', fg='#B42C2C', font=('Verdana', 10))
-label_titulo_esquerdo.place(relx=relx['label'], rely=rely['label'], relwidth=width_widget['label'], relheight=height_widget['label'])
+label_titulo_esquerdo.place(relx=relx['label'],
+                            rely=rely['label'],
+                            relwidth=width_widget['label'],
+                            relheight=height_widget['label'])
 
 label_titulo_central = Label(frame_central, text='Em Progresso', bg='#DFEBFD', fg='#013482', font=('Verdana', 10))
-label_titulo_central.place(relx=relx['label'], rely=rely['label'], relwidth=width_widget['label'], relheight=height_widget['label'])
+label_titulo_central.place(relx=relx['label'],
+                           rely=rely['label'],
+                           relwidth=width_widget['label'],
+                           relheight=height_widget['label'])
 
 label_titulo_direito = Label(frame_direito, text='Concluído', bg='#D6F9D5', fg='#039400', font=('Verdana', 10))
-label_titulo_direito.place(relx=relx['label'], rely=rely['label'], relwidth=width_widget['label'], relheight=height_widget['label'])
+label_titulo_direito.place(relx=relx['label'],
+                           rely=rely['label'],
+                           relwidth=width_widget['label'],
+                           relheight=height_widget['label'])
 
 # Criando e configrando Listbox
-listbox_esquerdo = Listbox(frame_esquerdo, font=('Roboto', 11), selectmode = "multiple")
-listbox_esquerdo.place(relx=relx['listbox'], rely=rely['listbox'], relwidth=width_widget['listbox'], relheight=height_widget['listbox'])
+listbox_esquerdo = Listbox(frame_esquerdo, font=('Roboto', 11), selectmode="multiple")
+listbox_esquerdo.place(relx=relx['listbox'],
+                       rely=rely['listbox'],
+                       relwidth=width_widget['listbox'],
+                       relheight=height_widget['listbox'])
 
-listbox_central = Listbox(frame_central, font=('Roboto', 11), selectmode = "multiple")
-listbox_central.place(relx=relx['listbox'], rely=rely['listbox'], relwidth=width_widget['listbox'], relheight=height_widget['listbox'])
+listbox_central = Listbox(frame_central, font=('Roboto', 11), selectmode="multiple")
+listbox_central.place(relx=relx['listbox'],
+                      rely=rely['listbox'],
+                      relwidth=width_widget['listbox'],
+                      relheight=height_widget['listbox'])
 
-listbox_direito = Listbox(frame_direito, font=('Roboto', 11), selectmode = "multiple")
-listbox_direito.place(relx=relx['listbox'], rely=rely['listbox'], relwidth=width_widget['listbox'], relheight=height_widget['listbox'])
+listbox_direito = Listbox(frame_direito, font=('Roboto', 11), selectmode="multiple")
+listbox_direito.place(relx=relx['listbox'],
+                      rely=rely['listbox'],
+                      relwidth=width_widget['listbox'],
+                      relheight=height_widget['listbox'])
 
 # Criando e configrando Buttons
 button_adicionar_esquerdo = Button(frame_esquerdo, text='Adicionar +', font=('Verdana', 10))
-button_adicionar_esquerdo.place(relx=relx['button_add'], rely=rely['button_add'], relwidth=width_widget['button_add'], relheight=height_widget['button_add'])
+button_adicionar_esquerdo.place(relx=relx['button_add'],
+                                rely=rely['button_add'],
+                                relwidth=width_widget['button_add'],
+                                relheight=height_widget['button_add'])
 
 button_adicionar_central = Button(frame_central, text='Adicionar +', font=('Verdana', 10))
-button_adicionar_central.place(relx=relx['button_add'], rely=rely['button_add'], relwidth=width_widget['button_add'], relheight=height_widget['button_add'])
+
+button_adicionar_central.place(relx=relx['button_add'],
+                               rely=rely['button_add'],
+                               relwidth=width_widget['button_add'],
+                               relheight=height_widget['button_add'])
 
 button_adicionar_direito = Button(frame_direito, text='Adicionar +', font=('Verdana', 10))
-button_adicionar_direito.place(relx=relx['button_add'], rely=rely['button_add'], relwidth=width_widget['button_add'], relheight=height_widget['button_add'])
+button_adicionar_direito.place(relx=relx['button_add'],
+                               rely=rely['button_add'],
+                               relwidth=width_widget['button_add'],
+                               relheight=height_widget['button_add'])
 
 # Criando e configurando pop-ups
-pop_up_esquerdo = Menu(root, tearoff=0)
-pop_up_esquerdo.add_command(label='Avançar')
-pop_up_esquerdo.add_command(label='Editar')
-pop_up_esquerdo.add_command(label='Excluir')
+pop_up_esquerdo = Menu(frame_principal, tearoff=0, font=('Roboto', 9))
+pop_up_esquerdo.add_command(label='Add in "Em progresso"', command=lambda: mudar_estado_da_tarefa(listbox_esquerdo, listbox_central))
+pop_up_esquerdo.add_command(label='Editar', command=lambda: editar_linhas_selecionadas(listbox_esquerdo, frame_principal))
+pop_up_esquerdo.add_command(label='Excluir', command=lambda: excluir_linhas_selecionada(listbox_esquerdo))
+
+pop_up_central = Menu(frame_principal, tearoff=0, font=('Roboto', 9))
+pop_up_central.add_command(label='Adicionar em "Concluído"', command=lambda: mudar_estado_da_tarefa(listbox_central, listbox_direito))
+pop_up_central.add_command(label='Voltar em "Para Fazer"', command=lambda: mudar_estado_da_tarefa(listbox_central, listbox_esquerdo))
+pop_up_central.add_command(label='Editar', command=lambda: editar_linhas_selecionadas(listbox_central, frame_principal))
+pop_up_central.add_command(label='Excluir', command=lambda: excluir_linhas_selecionada(listbox_central))
+
+pop_up_direito = Menu(frame_principal, tearoff=0, font=('Roboto', 9))
+pop_up_direito.add_command(label='Voltar para "Em Progresso"', command=lambda: mudar_estado_da_tarefa(listbox_direito, listbox_central))
+pop_up_direito.add_command(label='Editar', command=lambda: editar_linhas_selecionadas(listbox_direito, frame_principal))
+pop_up_direito.add_command(label='Excluir', command=lambda: excluir_linhas_selecionada(listbox_direito))
 
 # Definindo funções dos Buttons
-button_adicionar_esquerdo.config(command=lambda: adicionar_tarefa_e_cor_na_listbox(root, listbox_esquerdo))
-button_adicionar_central.config(command=lambda: adicionar_tarefa_e_cor_na_listbox(root, listbox_central))
-button_adicionar_direito.config(command=lambda: adicionar_tarefa_e_cor_na_listbox(root, listbox_direito))
+button_adicionar_esquerdo.config(command=lambda: adicionar_tarefa_e_cor_na_listbox(frame_principal, listbox_esquerdo))
+button_adicionar_central.config(command=lambda: adicionar_tarefa_e_cor_na_listbox(frame_principal, listbox_central))
+button_adicionar_direito.config(command=lambda: adicionar_tarefa_e_cor_na_listbox(frame_principal, listbox_direito))
 
 # Definindo eventos
-listbox_esquerdo.bind('<Button-3>', )
-
-
-def mostrar_selecionados():
-    listbox_esquerdo.selec
-
-button_adicionar_esquerdo.bind("<Button-3>", func= mostrar_pop_up_esquerdo)
+listbox_esquerdo.bind('<Button-3>', mostrar_pop_up_esquerdo)
+listbox_central.bind('<Button-3>', mostrar_pop_up_central)
+listbox_direito.bind('<Button-3>', mostrar_pop_up_direito)
 
 root.mainloop()
